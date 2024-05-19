@@ -1,5 +1,7 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
-import 'package:quranpbl/buttons.dart';
+import 'package:quranpbl/component/buttons.dart';
+import 'package:quranpbl/quran/listsurat.dart';  // Pastikan untuk mengimpor halaman ListSurat
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,16 +35,28 @@ class HomeScreen extends StatelessWidget {
                     HomeButton(
                       imagePath: 'assets/icon/quran.png',
                       label: 'BACA QURAN',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ListSurat()),
+                        );
+                      },
                     ),
                     SizedBox(height: 25),
                     HomeButton(
                       imagePath: 'assets/icon/TAJWID.png',
                       label: 'TAJWID',
+                      onTap: () {
+                        // Tambahkan navigasi untuk halaman TAJWID di sini
+                      },
                     ),
                     SizedBox(height: 25),
                     HomeButton(
                       imagePath: 'assets/icon/dzikir.png',
                       label: 'DZIKIR PAGI PETANG',
+                      onTap: () {
+                        // Tambahkan navigasi untuk halaman DZIKIR PAGI PETANG di sini
+                      },
                     ),
                   ],
                 ),
@@ -53,17 +67,26 @@ class HomeScreen extends StatelessWidget {
                     HomeButton(
                       imagePath: 'assets/icon/hijaiyah.png',
                       label: 'HURUF HIJAIYAH',
+                      onTap: () {
+                        // Tambahkan navigasi untuk halaman HURUF HIJAIYAH di sini
+                      },
                     ),
                     SizedBox(height: 25),
                     HomeButton(
                       imagePath: 'assets/icon/doa.png',
                       label: 'DOA SEHARI-HARI',
+                      onTap: () {
+                        // Tambahkan navigasi untuk halaman DOA SEHARI-HARI di sini
+                      },
                     ),
                     SizedBox(height: 25),
                     HomeButton(
                       imagePath: 'assets/icon/asmaulhusna.png',
                       label: 'ASMAUL HUSNA',
-                    )
+                      onTap: () {
+                        // Tambahkan navigasi untuk halaman ASMAUL HUSNA di sini
+                      },
+                    ),
                   ],
                 ),
               ],
