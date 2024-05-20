@@ -1,7 +1,7 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:quranpbl/component/buttons.dart';
-import 'package:quranpbl/quran/listsurat.dart';  // Pastikan untuk mengimpor halaman ListSurat
+import 'package:quranpbl/quran/listsurat.dart';  
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
