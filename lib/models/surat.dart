@@ -3,7 +3,7 @@ class Surat {
   final String name;
   final String revelation;
   final int numberOfVerses;
-  final String number; // Tambahkan properti number
+  final String number; 
 
   Surat({
     required this.name,
@@ -17,7 +17,7 @@ class Surat {
       name: json['name_id'] as String,
       revelation: json['revelation_id'] as String,
       numberOfVerses: int.parse(json['number_of_verses']),
-      number: json['number'] as String, // Tambahkan ini
+      number: json['number'] as String, 
     );
   }
 }

@@ -1,7 +1,8 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:quranpbl/component/buttons.dart';
-import 'package:quranpbl/quran/listsurat.dart';  // Pastikan untuk mengimpor halaman ListSurat
+import 'package:quranpbl/content/hijaiyah.dart';
+import 'package:quranpbl/content/listsurat.dart';  // Pastikan untuk mengimpor halaman ListSurat
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,7 +48,7 @@ class HomeScreen extends StatelessWidget {
                       imagePath: 'assets/icon/TAJWID.png',
                       label: 'TAJWID',
                       onTap: () {
-                        // Tambahkan navigasi untuk halaman TAJWID di sini
+                        
                       },
                     ),
                     SizedBox(height: 25),
@@ -68,7 +69,10 @@ class HomeScreen extends StatelessWidget {
                       imagePath: 'assets/icon/hijaiyah.png',
                       label: 'HURUF HIJAIYAH',
                       onTap: () {
-                        // Tambahkan navigasi untuk halaman HURUF HIJAIYAH di sini
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Hijaiyah()),
+                        );
                       },
                     ),
                     SizedBox(height: 25),
