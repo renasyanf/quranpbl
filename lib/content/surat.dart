@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:quranpbl/component/header.dart';
 import '../models/surat.dart';
-import '../models/ayat.dart';
+import '../models/ayat.dart'; 
 import '../services/ayat.dart';
 
 class OctagonNumber extends StatelessWidget {
@@ -130,20 +130,20 @@ class SuratPage extends StatelessWidget {
                 SizedBox(height: 12),
                 Expanded(
                   child: ListView.separated(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: EdgeInsets.symmetric(horizontal: 8.0), 
                     itemCount: ayatList.length,
-                    separatorBuilder: (context, index) => Divider(color: Colors.grey, indent: 16, endIndent: 16),
+                    separatorBuilder: (context, index) => Divider(color: Colors.grey, indent: 16, endIndent: 16), 
                     itemBuilder: (context, index) {
                       final ayat = ayatList[index];
                       return ListTile(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8), 
                         title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start, 
                           children: [
                             Row(
                               children: [
                                 OctagonNumber( // Widget segi delapan untuk nomor ayat
-                                  number: convertToPentagonArabicNumber(ayat.ayah), // Properti yang benar untuk nomor ayat
+                                  number: convertToPentagonArabicNumber(ayat.ayah),
                                   size: 24.0,
                                   color: Color(0xFF006769), // Warna segi delapan sesuai keinginan Anda
                                 ),
@@ -157,7 +157,7 @@ class SuratPage extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 4),
+                            SizedBox(height: 4), 
                             Text(
                               '${ayat.text}',
                               textAlign: TextAlign.left,

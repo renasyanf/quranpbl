@@ -10,6 +10,7 @@ class Ayat {
     required this.latin,
     required this.text,
     required this.ayah
+
   });
 
   factory Ayat.fromJson(Map<String, dynamic> json) {
@@ -17,7 +18,7 @@ class Ayat {
       arab: json['arab'] ?? '',
       latin: json['latin'] ?? '',
       text: json['text'] ?? '',
-      ayah: json['text'] ?? ''
+      ayah: json['ayah'] ?? '',
     );
   }
 }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import '../models/ayat.dart';
 
+
 class AyatService {
   Future<List<Ayat>> fetchAyatList(String suratNumber) async {
     final String response = await rootBundle.loadString('assets/data/ayat.json');

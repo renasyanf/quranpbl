@@ -71,6 +71,8 @@ flutter:
     - assets/hijaiyah/
     - assets/data/surah.json
     - assets/data/ayat.json
+    - assets/data/doa.json
+    - assets/data/asmaul_husna.json
     - assets/icon/quran.png
     - assets/icon/hijaiyah.png
     - assets/icon/dzikir.png

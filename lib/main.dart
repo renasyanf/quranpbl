@@ -1,8 +1,14 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:quranpbl/component/buttons.dart';
+
 import 'package:quranpbl/content/hijaiyah.dart';
 import 'package:quranpbl/content/listsurat.dart';  // Pastikan untuk mengimpor halaman ListSurat
+
+import 'package:quranpbl/content/listsurat.dart';  
+import 'package:quranpbl/content/listdoa.dart';
+import 'package:quranpbl/content/asmaulhusna.dart';
+
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,7 +86,10 @@ class HomeScreen extends StatelessWidget {
                       imagePath: 'assets/icon/doa.png',
                       label: 'DOA SEHARI-HARI',
                       onTap: () {
-                        // Tambahkan navigasi untuk halaman DOA SEHARI-HARI di sini
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ListDoaWidget()),
+                        );
                       },
                     ),
                     SizedBox(height: 25),
@@ -88,7 +97,10 @@ class HomeScreen extends StatelessWidget {
                       imagePath: 'assets/icon/asmaulhusna.png',
                       label: 'ASMAUL HUSNA',
                       onTap: () {
-                        // Tambahkan navigasi untuk halaman ASMAUL HUSNA di sini
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) =>AsmaulHusnaListScreen()),
+                        );
                       },
                     ),
                   ],
