@@ -47,7 +47,7 @@ class _HijaiyahState extends State<Hijaiyah> {
                   mainAxisSpacing: 4.0, // Spacing between rows
                 ),
                 itemBuilder: (context, index) {
-                  return Image.asset(imageList[index]);
+                  return Image.asset('assets/hijaiyah/${imageList[index]}'); // Pastikan path disini benar
                 },
               ),
             );
