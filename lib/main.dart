@@ -1,14 +1,13 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:quranpbl/component/buttons.dart';
-
 import 'package:quranpbl/content/hijaiyah.dart';
-import 'package:quranpbl/content/listsurat.dart';  // Pastikan untuk mengimpor halaman ListSurat
-
-import 'package:quranpbl/content/listsurat.dart';  
+import 'package:quranpbl/content/listsurat.dart';
+import 'package:quranpbl/content/listsurat.dart';
 import 'package:quranpbl/content/listdoa.dart';
 import 'package:quranpbl/content/asmaulhusna.dart';
-
+import 'package:quranpbl/content/tajwidmenu.dart';
+import 'package:quranpbl/content/zakat.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,7 +53,10 @@ class HomeScreen extends StatelessWidget {
                       imagePath: 'assets/icon/TAJWID.png',
                       label: 'TAJWID',
                       onTap: () {
-                        
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MenuTajwid()),
+                        );
                       },
                     ),
                     SizedBox(height: 25),
@@ -65,6 +67,13 @@ class HomeScreen extends StatelessWidget {
                         // Tambahkan navigasi untuk halaman DZIKIR PAGI PETANG di sini
                       },
                     ),
+                    SizedBox(height: 25),
+                    HomeButton(
+                        imagePath: 'assets/icon/nabi.png',
+                        label: 'KISAH 25 NABI',
+                        onTap: () {}
+                    ),
+                    HomeButton(imagePath: 'assets/icon/renungan.png', label: 'renungan', onTap: (){})
                   ],
                 ),
                 SizedBox(width: 25),
@@ -88,7 +97,8 @@ class HomeScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => ListDoaWidget()),
+                          MaterialPageRoute(
+                              builder: (context) => ListDoaWidget()),
                         );
                       },
                     ),
@@ -99,10 +109,19 @@ class HomeScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) =>AsmaulHusnaListScreen()),
+                          MaterialPageRoute(
+                              builder: (context) => AsmaulHusnaListScreen()),
                         );
                       },
                     ),
+                    SizedBox(height: 25),
+                    HomeButton(imagePath: 'assets/icon/zakat.png', label: 'KALKULATOR ZAKAT', onTap: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ZakatCalculatorScreen()),
+                        );
+                    })
                   ],
                 ),
               ],
