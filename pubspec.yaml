@@ -42,6 +42,7 @@ dependencies:
   path: any
   path_provider: ^2.1.1
   provider: ^6.1.2
+  image_gallery_saver: ^2.0.3
   
 
 dev_dependencies:
@@ -70,6 +71,7 @@ flutter:
   assets:
     - assets/
     - assets/hijaiyah/
+    - assets/renungan/
     - assets/data/surah.json
     - assets/data/ayat.json
     - assets/data/doa.json
