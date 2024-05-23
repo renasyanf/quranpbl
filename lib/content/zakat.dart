@@ -33,40 +33,65 @@ class _ZakatCalculatorScreenState extends State<ZakatCalculatorScreen> {
       appBar: Header(title: 'Kalkulatir Zakat', imagePath: 'assets/icon/zakat.png'),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _wealthController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Total Harta (dalam mata uang)',
-              ),
-            ),
-            TextField(
-              controller: _peopleController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Jumlah Orang (Zakat Fitrah)',
-              ),
-            ),
-            TextField(
-              controller: _ricePriceController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Harga Beras per kg (dalam mata uang)',
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _calculateZakat,
-              child: Text('Hitung Zakat'),
-            ),
-            SizedBox(height: 20),
-            Text('Zakat Mal: ${_zakatMal.toStringAsFixed(2)}'),
-            Text('Zakat Fitrah: ${_zakatFitrah.toStringAsFixed(2)}'),
-          ],
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(height: 10),
+        TextField(
+          controller: _wealthController,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            labelText: 'Total Harta (dalam mata uang)',
+            border: OutlineInputBorder(), // Tambahkan border pada TextField
+            filled: true,
+            fillColor: Colors.grey[200], // Ubah warna latar belakang TextField
+          ),
         ),
-      ),
-    );
-  }
-}
+        SizedBox(height: 10),
+        TextField(
+          controller: _peopleController,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            labelText: 'Jumlah Orang (Zakat Fitrah)',
+            border: OutlineInputBorder(),
+            filled: true,
+            fillColor: Colors.grey[200],
+          ),
+        ),
+        SizedBox(height: 10),
+        TextField(
+          controller: _ricePriceController,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            labelText: 'Harga Beras per kg (dalam mata uang)',
+            border: OutlineInputBorder(),
+            filled: true,
+            fillColor: Colors.grey[200],
+          ),
+        ),
+        SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: _calculateZakat,
+          child: Text(
+            'Hitung Zakat',
+            style: TextStyle(fontSize: 18), // Ubah ukuran teks tombol
+          ),
+          style: ElevatedButton.styleFrom(
+            primary:  Color(0xFF006769), // Ubah warna latar belakang tombol
+            padding: EdgeInsets.symmetric(vertical: 12), // Tambahkan padding tombol
+          ),
+        ),
+        SizedBox(height: 20),
+        Text(
+          'Zakat Mal: ${_zakatMal.toStringAsFixed(2)}',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          'Zakat Fitrah: ${_zakatFitrah.toStringAsFixed(2)}',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ],
+    ),
+  ),
+);
+  }}

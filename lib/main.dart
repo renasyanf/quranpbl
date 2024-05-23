@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:quranpbl/component/buttons.dart';
 import 'package:quranpbl/content/hijaiyah.dart';
 import 'package:quranpbl/content/listsurat.dart';
-import 'package:quranpbl/content/listsurat.dart';
 import 'package:quranpbl/content/listdoa.dart';
 import 'package:quranpbl/content/asmaulhusna.dart';
 import 'package:quranpbl/content/renungan.dart';
 import 'package:quranpbl/content/tajwidmenu.dart';
 import 'package:quranpbl/content/zakat.dart';
+import 'package:quranpbl/content/listnabi.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -72,7 +72,12 @@ class HomeScreen extends StatelessWidget {
                     HomeButton(
                         imagePath: 'assets/icon/nabi.png',
                         label: 'KISAH 25 NABI',
-                        onTap: () {}
+                        onTap: () {
+                          Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ListnabiWidget()),
+                        );
+                      }
                     ),
                     SizedBox(height: 25),
                     HomeButton(

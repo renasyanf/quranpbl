@@ -1,9 +1,8 @@
-// lib/pages/list_surat.dart
 import 'package:flutter/material.dart';
-import 'package:quranpbl/component/header.dart';
 import '../models/surat.dart';
 import '../services/surat.dart';
-import 'surat.dart'; 
+import 'surat.dart';
+import '../component/header.dart';
 
 class ListSurat extends StatefulWidget {
   @override
@@ -12,6 +11,8 @@ class ListSurat extends StatefulWidget {
 
 class _ListSuratState extends State<ListSurat> {
   late Future<List<Surat>> futureSuratList;
+  late List<String> suratNames = [];
+  late List<Surat> suratList = []; // Tambahkan properti suratList
 
   @override
   void initState() {
@@ -33,7 +34,21 @@ class _ListSuratState extends State<ListSurat> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 255, 245, 237),
-      appBar: Header(title: 'Baca Quran', imagePath: 'assets/icon/quran.png'),
+      appBar: Header(
+        title: 'Baca Quran',
+        imagePath: 'assets/icon/quran.png',
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: SuratSearchDelegate(suratNames, suratList), // Gunakan suratList di sini
+              );
+            },
+          ),
+        ],
+      ),
       body: FutureBuilder<List<Surat>>(
         future: futureSuratList,
         builder: (context, snapshot) {
@@ -44,7 +59,8 @@ class _ListSuratState extends State<ListSurat> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('No data found'));
           } else {
-            final suratList = snapshot.data!;
+            suratList = snapshot.data!; // Inisialisasi suratList
+            suratNames = suratList.map((surat) => surat.name).toList();
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -52,7 +68,11 @@ class _ListSuratState extends State<ListSurat> {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     'Daftar Surah',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color.fromARGB(255, 134, 109, 91)),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Color.fromARGB(255, 134, 109, 91),
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -99,7 +119,6 @@ class _ListSuratState extends State<ListSurat> {
                               surat.name_short,
                               style: TextStyle(
                                 fontSize: 20,
-                                
                                 fontFamily: 'amiri',
                               ),
                             ),
@@ -150,5 +169,78 @@ class HexagonClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
     return false;
+  }
+}
+
+class SuratSearchDelegate extends SearchDelegate<String> {
+  final List<String> suratNames;
+  final List<Surat> suratList;
+
+  SuratSearchDelegate(this.suratNames, this.suratList);
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+           close(context, '');
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, '');
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    final results = suratList.where((surat) => surat.name.toLowerCase().contains(query.toLowerCase())).toList();
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        final surat = results[index];
+        return ListTile(
+          title: Text(surat.name),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SuratPage(surat: surat),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final results = suratList.where((surat) => surat.name.toLowerCase().contains(query.toLowerCase())).toList();
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        final surat = results[index];
+        return ListTile(
+          title: Text(surat.name),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SuratPage(surat: surat),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }

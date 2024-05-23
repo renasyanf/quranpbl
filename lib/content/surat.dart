@@ -152,7 +152,7 @@ class SuratPage extends StatelessWidget {
                                   child: Text(
                                     ayat.arab,
                                     textAlign: TextAlign.right,
-                                    style: TextStyle(fontFamily: 'amiri', fontWeight: FontWeight.bold, fontSize: 20),
+                                    style: TextStyle(fontFamily: 'amiri', fontSize: 20),
                                   ),
                                 ),
                               ],
@@ -161,7 +161,7 @@ class SuratPage extends StatelessWidget {
                             Text(
                               '${ayat.text}',
                               textAlign: TextAlign.left,
-                              style: TextStyle(fontFamily: 'amiri'),
+                              style: TextStyle(fontFamily: 'amiri',fontSize: 15),
                             ),
                           ],
                         ),

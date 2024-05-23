@@ -43,6 +43,7 @@ dependencies:
   path_provider: ^2.1.1
   provider: ^6.1.2
   image_gallery_saver: ^2.0.3
+  permission_handler: ^10.0.0
   
 
 dev_dependencies:
@@ -75,6 +76,7 @@ flutter:
     - assets/data/surah.json
     - assets/data/ayat.json
     - assets/data/doa.json
+    - assets/data/kisahnabi.json
     - assets/data/asmaul_husna.json
     - assets/icon/quran.png
     - assets/icon/hijaiyah.png
