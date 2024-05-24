@@ -75,6 +75,7 @@ flutter:
     - assets/renungan/
     - assets/data/surah.json
     - assets/data/ayat.json
+    - assets/data/data.json
     - assets/data/doa.json
     - assets/data/kisahnabi.json
     - assets/data/asmaul_husna.json

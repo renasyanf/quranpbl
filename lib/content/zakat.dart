@@ -30,7 +30,7 @@ class _ZakatCalculatorScreenState extends State<ZakatCalculatorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 255, 245, 237),
-      appBar: Header(title: 'Kalkulatir Zakat', imagePath: 'assets/icon/zakat.png'),
+      appBar: Header(title: 'Kalkulator Zakat', imagePath: 'assets/icon/zakat.png'),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
     child: Column(
