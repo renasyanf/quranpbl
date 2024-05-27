@@ -73,6 +73,8 @@ flutter:
     - assets/data/ayat.json
     - assets/data/doa.json
     - assets/data/asmaul_husna.json
+    - assets/data/dzikirpagi.json
+    - assets/data/dzikirpetang.json
     - assets/icon/quran.png
     - assets/icon/hijaiyah.png
     - assets/icon/dzikir.png

@@ -1,10 +1,10 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:quranpbl/component/buttons.dart';
-
+import 'package:quranpbl/content/menudzikir.dart';
 import 'package:quranpbl/content/hijaiyah.dart';
 import 'package:quranpbl/content/listsurat.dart';  // Pastikan untuk mengimpor halaman ListSurat
-
+import 'package:quranpbl/content/menudzikir.dart';  
 import 'package:quranpbl/content/listsurat.dart';  
 import 'package:quranpbl/content/listdoa.dart';
 import 'package:quranpbl/content/asmaulhusna.dart';
@@ -62,7 +62,10 @@ class HomeScreen extends StatelessWidget {
                       imagePath: 'assets/icon/dzikir.png',
                       label: 'DZIKIR PAGI PETANG',
                       onTap: () {
-                        // Tambahkan navigasi untuk halaman DZIKIR PAGI PETANG di sini
+                         Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MenuDzikirScreen()),
+                        );
                       },
                     ),
                   ],
