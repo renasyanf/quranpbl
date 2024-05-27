@@ -41,6 +41,9 @@ dependencies:
   sqflite: ^2.3.0
   path: any
   path_provider: ^2.1.1
+  provider: ^6.1.2
+  image_gallery_saver: ^2.0.3
+  permission_handler: ^10.0.0
   
 
 dev_dependencies:
@@ -69,9 +72,12 @@ flutter:
   assets:
     - assets/
     - assets/hijaiyah/
+    - assets/renungan/
     - assets/data/surah.json
     - assets/data/ayat.json
+    - assets/data/data.json
     - assets/data/doa.json
+    - assets/data/kisahnabi.json
     - assets/data/asmaul_husna.json
     - assets/data/dzikirpagi.json
     - assets/data/dzikirpetang.json
@@ -84,6 +90,9 @@ flutter:
     - assets/icon/about.png
     - assets/icon/mic.png
     - assets/icon/sound.png
+    - assets/icon/zakat.png
+    - assets/icon/nabi.png
+    - assets/icon/renungan.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

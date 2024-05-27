@@ -1,8 +1,10 @@
 import 'dart:math';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:quranpbl/component/header.dart';
 import '../models/surat.dart';
-import '../models/ayat.dart'; 
+import '../models/ayat.dart';
 import '../services/ayat.dart';
 
 class OctagonNumber extends StatelessWidget {
@@ -45,7 +47,7 @@ class _OctagonPainter extends CustomPainter {
     final double centerY = size.height / 2;
     final double radius = side / cos(pi / 8);
 
-    // Gambar segi delapan
+    // Draw octagon
     Path octagonPath = Path();
     octagonPath.moveTo(centerX + side, centerY);
     for (int i = 1; i < 8; i++) {
@@ -55,7 +57,7 @@ class _OctagonPainter extends CustomPainter {
     octagonPath.close();
     canvas.drawPath(octagonPath, Paint()..color = color);
 
-    // Gambar nomor di dalam segi delapan
+    // Draw number inside the octagon
     TextPainter textPainter = TextPainter(
       text: TextSpan(text: number, style: textStyle),
       textDirection: TextDirection.ltr,
@@ -70,10 +72,93 @@ class _OctagonPainter extends CustomPainter {
   }
 }
 
-class SuratPage extends StatelessWidget {
+class SuratPage extends StatefulWidget {
   final Surat surat;
 
   SuratPage({required this.surat});
+
+  @override
+  _SuratPageState createState() => _SuratPageState();
+}
+
+class _SuratPageState extends State<SuratPage> {
+  late stt.SpeechToText _speech;
+  bool _isListening = false;
+  String _text = '';
+  double _confidence = 1.0;
+  String _recitationStatus = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _speech = stt.SpeechToText();
+  }
+
+  void _listen() async {
+    if (!_isListening) {
+      bool available = await _speech.initialize(
+        onStatus: (val) => print('onStatus: $val'),
+        onError: (val) => print('onError: $val'),
+      );
+      if (available) {
+        setState(() {
+          _isListening = true;
+          _recitationStatus = '';
+        });
+        _speech.listen(
+          onResult: (val) async {
+            setState(() {
+              _text = val.recognizedWords;
+              if (val.hasConfidenceRating && val.confidence > 0) {
+                _confidence = val.confidence;
+              }
+            });
+            String correctedText = await correctText(_text);
+            setState(() {
+              _recitationStatus = _text == correctedText ? 'Correct Reading' : 'Incorrect Reading';
+            });
+          },
+          localeId: 'ar',
+        );
+      }
+    } else {
+      setState(() {
+        _isListening = false;
+        _speech.stop();
+      });
+    }
+  }
+
+  Future<String> correctText(String text) async {
+    List<String> verses = await fetchQuranText();
+    String correctedText = text;
+    for (String verse in verses) {
+      if (text.contains(verse)) {
+        correctedText = text.replaceAll(verse, '');
+        break;
+      }
+    }
+    return correctedText;
+  }
+
+  Future<List<String>> fetchQuranText() async {
+    try {
+      String data = await DefaultAssetBundle.of(context).loadString('assets/data/data.json');
+      Map<String, dynamic> surahs = jsonDecode(data);
+      List<String> allVerses = [];
+
+      surahs.forEach((surahKey, surahValue) {
+        surahValue.forEach((ayahKey, ayahValue) {
+          allVerses.add(ayahValue['text']);
+        });
+      });
+
+      return allVerses;
+    } catch (e) {
+      print('Error loading Quranic verses: $e');
+      return [];
+    }
+  }
 
   String convertToPentagonArabicNumber(String number) {
     List<String> pentagonArabicNumbers = ['\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669'];
@@ -91,7 +176,7 @@ class SuratPage extends StatelessWidget {
       backgroundColor: Color.fromARGB(255, 255, 245, 237),
       appBar: Header(title: 'Baca Quran', imagePath: 'assets/icon/quran.png'),
       body: FutureBuilder<List<Ayat>>(
-        future: AyatService().fetchAyatList(surat.number),
+        future: AyatService().fetchAyatList(widget.surat.number),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -110,7 +195,7 @@ class SuratPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        surat.name,
+                        widget.surat.name,
                         textAlign: TextAlign.center,
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color.fromARGB(255, 134, 109, 91)),
                       ),
@@ -119,7 +204,7 @@ class SuratPage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            '${surat.numberOfVerses} - ${surat.revelation}',
+                            '${widget.surat.numberOfVerses} - ${widget.surat.revelation}',
                             style: TextStyle(fontSize: 14, color: Color(0xFFC7B7A3)),
                           ),
                         ],
@@ -130,38 +215,38 @@ class SuratPage extends StatelessWidget {
                 SizedBox(height: 12),
                 Expanded(
                   child: ListView.separated(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0), 
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
                     itemCount: ayatList.length,
-                    separatorBuilder: (context, index) => Divider(color: Colors.grey, indent: 16, endIndent: 16), 
+                    separatorBuilder: (context, index) => Divider(color: Colors.grey, indent: 16, endIndent: 16),
                     itemBuilder: (context, index) {
                       final ayat = ayatList[index];
                       return ListTile(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8), 
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start, 
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                OctagonNumber( // Widget segi delapan untuk nomor ayat
+                                OctagonNumber( // Octagon widget for verse number
                                   number: convertToPentagonArabicNumber(ayat.ayah),
                                   size: 24.0,
-                                  color: Color(0xFF006769), // Warna segi delapan sesuai keinginan Anda
+                                  color: Color(0xFF006769),
                                 ),
                                 SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     ayat.arab,
                                     textAlign: TextAlign.right,
-                                    style: TextStyle(fontFamily: 'amiri', fontWeight: FontWeight.bold, fontSize: 20),
+                                    style: TextStyle(fontFamily: 'amiri', fontSize: 20),
                                   ),
                                 ),
                               ],
                             ),
-                            SizedBox(height: 4), 
+                            SizedBox(height: 4),
                             Text(
                               '${ayat.text}',
                               textAlign: TextAlign.left,
-                              style: TextStyle(fontFamily: 'amiri'),
+                              style: TextStyle(fontFamily: 'amiri',fontSize: 15),
                             ),
                           ],
                         ),
@@ -169,6 +254,53 @@ class SuratPage extends StatelessWidget {
                     },
                   ),
                 ),
+                SizedBox(height: 15), // Spacer
+                Center(
+                    // Center the speech button and text horizontally
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 50, // Width of the FloatingActionButton
+                          height: 50, // Height of the FloatingActionButton
+                          child: FloatingActionButton(
+                            onPressed: _listen,
+                            child: Icon(
+                              _isListening ? Icons.mic : Icons.mic_none,
+                              size: 24, // Icon size
+                            ),
+                            backgroundColor: Color(0xFF006769),
+                          ),
+                        ),
+                        SizedBox(width: 25), // Spacing between mic button and text
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _text,
+                              style: TextStyle(
+                                fontSize: 18.0, // Text size
+                                color: Colors.black,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: 'Amiri',
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5), // Spacing between text and recitation status
+                            Text(
+                              _recitationStatus,
+                              style: TextStyle(
+                                fontSize: 14.0, // Text size
+                                color: _recitationStatus.contains('Correct') ? Colors.green : Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             );
           }

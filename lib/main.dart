@@ -1,14 +1,22 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:quranpbl/component/buttons.dart';
+<<<<<<< HEAD
 import 'package:quranpbl/content/menudzikir.dart';
 import 'package:quranpbl/content/hijaiyah.dart';
 import 'package:quranpbl/content/listsurat.dart';  // Pastikan untuk mengimpor halaman ListSurat
 import 'package:quranpbl/content/menudzikir.dart';  
 import 'package:quranpbl/content/listsurat.dart';  
+=======
+import 'package:quranpbl/content/hijaiyah.dart';
+import 'package:quranpbl/content/listsurat.dart';
+>>>>>>> 94cc88b9b7efbffe394226e62fe45c68b48a9de9
 import 'package:quranpbl/content/listdoa.dart';
 import 'package:quranpbl/content/asmaulhusna.dart';
-
+import 'package:quranpbl/content/renungan.dart';
+import 'package:quranpbl/content/tajwidmenu.dart';
+import 'package:quranpbl/content/zakat.dart';
+import 'package:quranpbl/content/listnabi.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +40,7 @@ class HomeScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Center(
           child: Container(
-            margin: EdgeInsets.only(top: 125.0), // Added top margin
+            margin: EdgeInsets.only(top: 75.0, bottom: 75.0), 
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -54,7 +62,10 @@ class HomeScreen extends StatelessWidget {
                       imagePath: 'assets/icon/TAJWID.png',
                       label: 'TAJWID',
                       onTap: () {
-                        
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MenuTajwid()),
+                        );
                       },
                     ),
                     SizedBox(height: 25),
@@ -68,6 +79,27 @@ class HomeScreen extends StatelessWidget {
                         );
                       },
                     ),
+                    SizedBox(height: 25),
+                    HomeButton(
+                        imagePath: 'assets/icon/nabi.png',
+                        label: 'KISAH 25 NABI',
+                        onTap: () {
+                          Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ListnabiWidget()),
+                        );
+                      }
+                    ),
+                    SizedBox(height: 25),
+                    HomeButton(
+                      imagePath: 'assets/icon/renungan.png', 
+                      label: 'RENUNGAN', 
+                      onTap: (){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Renungan()),
+                        );
+                      })
                   ],
                 ),
                 SizedBox(width: 25),
@@ -91,7 +123,8 @@ class HomeScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => ListDoaWidget()),
+                          MaterialPageRoute(
+                              builder: (context) => ListDoaWidget()),
                         );
                       },
                     ),
@@ -102,34 +135,46 @@ class HomeScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) =>AsmaulHusnaListScreen()),
+                          MaterialPageRoute(
+                              builder: (context) => AsmaulHusnaListScreen()),
                         );
                       },
                     ),
+                    SizedBox(height: 25),
+                    HomeButton(imagePath: 'assets/icon/zakat.png', label: 'KALKULATOR ZAKAT', onTap: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ZakatCalculatorScreen()),
+                        );
+                    }),
+                    SizedBox(height: 25),
+                    HomeButton(imagePath: 'assets/icon/about.png', label: 'ABOUT', onTap: (){})
                   ],
                 ),
+                
               ],
             ),
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: SizedBox(
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: () {
-              // TODO: Implement About screen navigation
-            },
-            icon: Image.asset('assets/icon/about.png', width: 24, height: 24),
-            label: Text('About'),
-            style: ElevatedButton.styleFrom(
-              primary: Color(0xFF006769),
-              padding: EdgeInsets.symmetric(vertical: 15.0),
-            ),
-          ),
-        ),
-      ),
+      // bottomNavigationBar: Padding(
+      //   padding: const EdgeInsets.all(30.0),
+      //   child: SizedBox(
+      //     width: double.infinity,
+      //     child: ElevatedButton.icon(
+      //       onPressed: () {
+      //         // TODO: Implement About screen navigation
+      //       },
+      //       icon: Image.asset('assets/icon/about.png', width: 24, height: 24),
+      //       label: Text('About'),
+      //       style: ElevatedButton.styleFrom(
+      //         primary: Color(0xFF006769),
+      //         padding: EdgeInsets.symmetric(vertical: 15.0),
+      //       ),
+      //     ),
+      //   ),
+      // ),
     );
   }
 }

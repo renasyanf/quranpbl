@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 class Header extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final String imagePath;
+  final List<Widget>? actions;
 
-  Header({required this.title, required this.imagePath});
+  Header({required this.title, required this.imagePath, this.actions});
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +25,19 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Image.asset(imagePath, width: 65, height: 65),
-        ),
-      ],
+      actions: actions != null
+          ? actions! + [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.asset(imagePath, width: 65, height: 65),
+              ),
+            ]
+          : [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.asset(imagePath, width: 65, height: 65),
+              ),
+            ],
     );
   }
 
