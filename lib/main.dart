@@ -1,16 +1,8 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:quranpbl/component/buttons.dart';
-<<<<<<< HEAD
 import 'package:quranpbl/content/menudzikir.dart';
 import 'package:quranpbl/content/hijaiyah.dart';
-import 'package:quranpbl/content/listsurat.dart';  // Pastikan untuk mengimpor halaman ListSurat
-import 'package:quranpbl/content/menudzikir.dart';  
-import 'package:quranpbl/content/listsurat.dart';  
-=======
-import 'package:quranpbl/content/hijaiyah.dart';
 import 'package:quranpbl/content/listsurat.dart';
->>>>>>> 94cc88b9b7efbffe394226e62fe45c68b48a9de9
 import 'package:quranpbl/content/listdoa.dart';
 import 'package:quranpbl/content/asmaulhusna.dart';
 import 'package:quranpbl/content/renungan.dart';
@@ -158,23 +150,6 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      // bottomNavigationBar: Padding(
-      //   padding: const EdgeInsets.all(30.0),
-      //   child: SizedBox(
-      //     width: double.infinity,
-      //     child: ElevatedButton.icon(
-      //       onPressed: () {
-      //         // TODO: Implement About screen navigation
-      //       },
-      //       icon: Image.asset('assets/icon/about.png', width: 24, height: 24),
-      //       label: Text('About'),
-      //       style: ElevatedButton.styleFrom(
-      //         primary: Color(0xFF006769),
-      //         padding: EdgeInsets.symmetric(vertical: 15.0),
-      //       ),
-      //     ),
-      //   ),
-      // ),
     );
   }
 }
