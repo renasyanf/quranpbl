@@ -40,16 +40,37 @@ class ListDoaWidget extends StatelessWidget {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final doa = snapshot.data![index];
-                return ListTile(
-                  title: Text(doa.judul),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DoaListScreen(doaNumber: doa.judul),
+                return Column(
+                  children: [
+                    ListTile(
+                      leading: CircleAvatar(
+                        child: Text(
+                          "${index + 1}", // Add the index number
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        backgroundColor: Color(0xFF006769),
                       ),
-                    );
-                  },
+                      title: Text(
+                        doa.judul,
+                        style: TextStyle(
+                          fontFamily: 'Amiri',
+                          fontSize: 16,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DoaListScreen(doaNumber: doa.judul),
+                          ),
+                        );
+                      },
+                    ),
+                    Divider(), // Add a divider between list items
+                  ],
                 );
               },
             );

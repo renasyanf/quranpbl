@@ -15,7 +15,7 @@ class DzikiPagiScreen extends StatelessWidget {
       backgroundColor: Color.fromARGB(255, 255, 245, 237),
       appBar: Header(title: 'Dzikir Pagi', imagePath: 'assets/icon/quran.png'),
       body: FutureBuilder<List<DzikirPagi>>(
-        future: doaService.fetchDzikir(), // Using the correct future method
+        future: doaService.fetchDzikir(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -24,34 +24,41 @@ class DzikiPagiScreen extends StatelessWidget {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('No data found'));
           } else {
-            return ListView.separated(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                final dzikir = snapshot.data![index];
-                return ListTile(
-                  title: Text(dzikir.title),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(dzikir.arabic, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      SizedBox(height: 5),
-                      Text(dzikir.translation, style: TextStyle(fontSize: 16)),
-                      SizedBox(height: 5), // Add space between translation and notes
-                      Text(dzikir.notes, style: TextStyle(fontSize: 16)),
-                      SizedBox(height: 5), // Add space between notes and source
-                      Text(dzikir.source, style: TextStyle(fontSize: 16)),
-                    ],
-                  ),
-                );
-              },
-              separatorBuilder: (context, index) {
-                return Divider(
-                  color: Colors.grey, // Color of the separator line
-                  thickness: 1, // Thickness of the separator line
-                  indent: 16, // Indentation for the separator line
-                  endIndent: 16, // End indentation for the separator line
-                );
-              },
+            return Container(
+              margin: EdgeInsets.all(16), // Added margin around the container
+              child: ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  final dzikir = snapshot.data![index];
+                  return Container(
+                    padding: EdgeInsets.all(18),
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 255, 245, 237),
+                      borderRadius: BorderRadius.circular(25),
+                      border: Border.all(color: Color(0xFF006769), width: 1),
+                    ),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                      title: Text(dzikir.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(dzikir.arabic, style: TextStyle(fontSize: 18, color: Colors.black)),
+                          SizedBox(height: 2),
+                          Text(dzikir.translation, style: TextStyle(fontSize: 16)),
+                          SizedBox(height: 2),
+                          Text(
+                            dzikir.notes,
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                            textAlign: TextAlign.justify,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
             );
           }
         },
