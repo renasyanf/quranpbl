@@ -214,41 +214,48 @@ class _SuratPageState extends State<SuratPage> {
                 ),
                 SizedBox(height: 12),
                 Expanded(
-                  child: ListView.separated(
+                  child: ListView.builder(
                     padding: EdgeInsets.symmetric(horizontal: 8.0),
                     itemCount: ayatList.length,
-                    separatorBuilder: (context, index) => Divider(color: Colors.grey, indent: 16, endIndent: 16),
                     itemBuilder: (context, index) {
                       final ayat = ayatList[index];
-                      return ListTile(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                OctagonNumber( // Octagon widget for verse number
-                                  number: convertToPentagonArabicNumber(ayat.ayah),
-                                  size: 24.0,
-                                  color: Color(0xFF006769),
-                                ),
-                                SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    ayat.arab,
-                                    textAlign: TextAlign.right,
-                                    style: TextStyle(fontFamily: 'amiri', fontSize: 20),
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 255, 245, 237), // Unified background color
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Color(0xFF006769), width: 1),
+                        ),
+                        margin: EdgeInsets.symmetric(vertical: 4),
+                        child: ListTile(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  OctagonNumber( // Octagon widget for verse number
+                                    number: convertToPentagonArabicNumber(ayat.ayah),
+                                    size: 24.0,
+                                    color: Color(0xFF006769),
                                   ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              '${ayat.text}',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(fontFamily: 'amiri',fontSize: 15),
-                            ),
-                          ],
+                                  SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      ayat.arab,
+                                      textAlign: TextAlign.right,
+                                      style: TextStyle(fontFamily: 'amiri', fontSize: 20),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                '${ayat.text}',
+                                textAlign: TextAlign.left,
+                                style: TextStyle(fontFamily: 'amiri', fontSize: 15),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
@@ -256,51 +263,51 @@ class _SuratPageState extends State<SuratPage> {
                 ),
                 SizedBox(height: 15), // Spacer
                 Center(
-                    // Center the speech button and text horizontally
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 50, // Width of the FloatingActionButton
-                          height: 50, // Height of the FloatingActionButton
-                          child: FloatingActionButton(
-                            onPressed: _listen,
-                            child: Icon(
-                              _isListening ? Icons.mic : Icons.mic_none,
-                              size: 24, // Icon size
-                            ),
-                            backgroundColor: Color(0xFF006769),
+                  // Center the speech button and text horizontally
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 50, // Width of the FloatingActionButton
+                        height: 50, // Height of the FloatingActionButton
+                        child: FloatingActionButton(
+                          onPressed: _listen,
+                          child: Icon(
+                            _isListening ? Icons.mic : Icons.mic_none,
+                            size: 24, // Icon size
                           ),
+                          backgroundColor: Color(0xFF006769),
                         ),
-                        SizedBox(width: 25), // Spacing between mic button and text
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _text,
-                              style: TextStyle(
-                                fontSize: 18.0, // Text size
-                                color: Colors.black,
-                                fontWeight: FontWeight.w400,
-                                fontFamily: 'Amiri',
-                              ),
-                              textAlign: TextAlign.right,
+                      ),
+                      SizedBox(width: 25), // Spacing between mic button and text
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _text,
+                            style: TextStyle(
+                              fontSize: 18.0, // Text size
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400,
+                              fontFamily: 'Amiri',
                             ),
-                            SizedBox(height: 5), // Spacing between text and recitation status
-                            Text(
-                              _recitationStatus,
-                              style: TextStyle(
-                                fontSize: 14.0, // Text size
-                                color: _recitationStatus.contains('Correct') ? Colors.green : Colors.red,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            textAlign: TextAlign.right,
+                          ),
+                          SizedBox(height: 5), // Spacing between text and recitation status
+                          Text(
+                            _recitationStatus,
+                            style: TextStyle(
+                              fontSize: 14.0, // Text size
+                              color: _recitationStatus.contains('Correct') ? Colors.green : Colors.red,
+                              fontWeight: FontWeight.bold,
                             ),
-                            const SizedBox(height: 20),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    ],
                   ),
+                ),
               ],
             );
           }

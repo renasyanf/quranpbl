@@ -81,6 +81,8 @@ flutter:
     - assets/data/doa.json
     - assets/data/kisahnabi.json
     - assets/data/asmaul_husna.json
+    - assets/data/dzikirpagi.json
+    - assets/data/dzikirpetang.json
     - assets/icon/quran.png
     - assets/icon/hijaiyah.png
     - assets/icon/dzikir.png
@@ -93,6 +95,7 @@ flutter:
     - assets/icon/zakat.png
     - assets/icon/nabi.png
     - assets/icon/renungan.png
+    - assets/icon/onboard.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
