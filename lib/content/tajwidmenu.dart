@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quranpbl/component/buttons.dart';
 import 'package:quranpbl/component/header.dart';
+import 'package:quranpbl/content/TajwidContent.dart';
 
 class MenuTajwid extends StatelessWidget {
   @override
@@ -14,7 +15,12 @@ class MenuTajwid extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               SizedBox(height: 30),
-              MenuButton(label: 'Hukum Nun Sukun dan Tanwin', onTap: (){}),
+              MenuButton(label: 'Hukum Nun Sukun dan Tanwin', onTap: (){
+                Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Tajwid()),
+                        );
+              }),
               SizedBox(height: 25),
               MenuButton(label: 'Hukum Mim Sukun', onTap: (){}),
               SizedBox(height: 25),

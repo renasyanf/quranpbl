@@ -44,6 +44,8 @@ dependencies:
   provider: ^6.1.2
   image_gallery_saver: ^2.0.3
   permission_handler: ^10.0.0
+  http: ^1.1.0
+  audioplayers: ^5.0.0
   
 
 dev_dependencies:
