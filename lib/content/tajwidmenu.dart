@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quranpbl/component/buttons.dart';
 import 'package:quranpbl/component/header.dart';
 import 'package:quranpbl/content/TajwidContent.dart';
+import 'package:quranpbl/content/coba.dart';
 
 class MenuTajwid extends StatelessWidget {
   @override
@@ -22,7 +23,12 @@ class MenuTajwid extends StatelessWidget {
                         );
               }),
               SizedBox(height: 25),
-              MenuButton(label: 'Hukum Mim Sukun', onTap: (){}),
+              MenuButton(label: 'Hukum Mim Sukun', onTap: (){
+                Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SuratPage()),
+                        );
+              }),
               SizedBox(height: 25),
               MenuButton(label: 'Gunnah', onTap: (){}),
               SizedBox(height: 25),
