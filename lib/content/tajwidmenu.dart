@@ -18,21 +18,45 @@ class MenuTajwid extends StatelessWidget {
               MenuButton(label: 'Hukum Nun Sukun dan Tanwin', onTap: (){
                 Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => Tajwid()),
+                          MaterialPageRoute(builder: (context) => Tajwid1()),
                         );
               }),
               SizedBox(height: 25),
-              MenuButton(label: 'Hukum Mim Sukun', onTap: (){}),
+              MenuButton(label: 'Hukum Mim Sukun', onTap: (){
+                Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Tajwid6()),
+                        );
+              }),
               SizedBox(height: 25),
-              MenuButton(label: 'Gunnah', onTap: (){}),
+              MenuButton(label: 'Gunnah', onTap: (){
+                Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Tajwid2()),
+                        );
+              }),
               SizedBox(height: 25),
-              MenuButton(label: 'Macam-macam Idghom', onTap: (){}),
+              MenuButton(label: 'Macam-macam Idghom', onTap: (){
+                Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Tajwid3()),
+                        );
+              }),
               SizedBox(height: 25),
-              MenuButton(label: 'Hukum Lam Ta\'rif', onTap: (){}),
+              MenuButton(label: 'Hukum Lam Ta\'rif', onTap: (){
+                Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Tajwid4()),
+                        );
+              }),
               SizedBox(height: 25),
-              MenuButton(label: 'Qolqolah', onTap: (){}),
-              SizedBox(height: 25),
-              MenuButton(label: 'Hukum Bacaan Mad', onTap: (){}),
+              MenuButton(label: 'Qolqolah', onTap: (){
+                Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Tajwid5()),
+                        );
+              }),
+              
             ]
           ),
         ),

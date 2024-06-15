@@ -74,6 +74,7 @@ flutter:
   assets:
     - assets/
     - assets/hijaiyah/
+    - assets/tajwid/
     - assets/renungan/
     - assets/data/surah.json
     - assets/data/ayat.json
