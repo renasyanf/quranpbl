@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quranpbl/component/buttons.dart';
 import 'package:quranpbl/component/header.dart';
 import 'package:quranpbl/content/TajwidContent.dart';
+import 'package:quranpbl/content/coba.dart';
 
 class MenuTajwid extends StatelessWidget {
   @override

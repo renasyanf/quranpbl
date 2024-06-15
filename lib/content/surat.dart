@@ -1,11 +1,12 @@
-import 'dart:math';
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:quranpbl/component/header.dart';
 import '../models/surat.dart';
 import '../models/ayat.dart';
 import '../services/ayat.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class OctagonNumber extends StatelessWidget {
   final String number;
@@ -81,17 +82,31 @@ class SuratPage extends StatefulWidget {
   _SuratPageState createState() => _SuratPageState();
 }
 
-class _SuratPageState extends State<SuratPage> {
-  late stt.SpeechToText _speech;
+class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixin {
+  ScrollController _scrollController = ScrollController();
+  stt.SpeechToText _speech = stt.SpeechToText();
   bool _isListening = false;
   String _text = '';
   double _confidence = 1.0;
+  
   String _recitationStatus = '';
+  AudioPlayer _audioPlayer = AudioPlayer();
+  String? _playingAyat;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
     _speech = stt.SpeechToText();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _audioPlayer.dispose();
+    super.dispose();
   }
 
   void _listen() async {
@@ -160,6 +175,26 @@ class _SuratPageState extends State<SuratPage> {
     }
   }
 
+  void _playAudio(String ayah, String audioUrl) async {
+    if (_playingAyat == ayah) {
+      await _audioPlayer.pause();
+      setState(() {
+        _playingAyat = null;
+      });
+    } else {
+      await _audioPlayer.play(DeviceFileSource(audioUrl));
+      setState(() {
+        _playingAyat = ayah;
+      });
+
+      _audioPlayer.onPlayerComplete.listen((event) {
+        setState(() {
+          _playingAyat = null;
+        });
+      });
+    }
+  }
+
   String convertToPentagonArabicNumber(String number) {
     List<String> pentagonArabicNumbers = ['\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669'];
     String pentagonArabicNumber = '';
@@ -172,6 +207,8 @@ class _SuratPageState extends State<SuratPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Ensure to call super.build(context) when using AutomaticKeepAliveClientMixin
+
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 255, 245, 237),
       appBar: Header(title: 'Baca Quran', imagePath: 'assets/icon/quran.png'),
@@ -215,6 +252,7 @@ class _SuratPageState extends State<SuratPage> {
                 SizedBox(height: 12),
                 Expanded(
                   child: ListView.builder(
+                    controller: _scrollController,
                     padding: EdgeInsets.symmetric(horizontal: 8.0),
                     itemCount: ayatList.length,
                     itemBuilder: (context, index) {
@@ -233,10 +271,19 @@ class _SuratPageState extends State<SuratPage> {
                             children: [
                               Row(
                                 children: [
-                                  OctagonNumber( // Octagon widget for verse number
+                                  OctagonNumber(
                                     number: convertToPentagonArabicNumber(ayat.ayah),
                                     size: 24.0,
                                     color: Color(0xFF006769),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                      _playingAyat == ayat.ayah ? Icons.pause : Icons.volume_up,
+                                      color: Color(0xFF006769),
+                                    ),
+                                    onPressed: () {
+                                      _playAudio(ayat.ayah, ayat.audio); 
+                                    },
                                   ),
                                   SizedBox(width: 8),
                                   Expanded(
@@ -261,43 +308,42 @@ class _SuratPageState extends State<SuratPage> {
                     },
                   ),
                 ),
-                SizedBox(height: 15), // Spacer
+                SizedBox(height: 15),
                 Center(
-                  // Center the speech button and text horizontally
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(
-                        width: 50, // Width of the FloatingActionButton
-                        height: 50, // Height of the FloatingActionButton
+                        width: 50,
+                        height: 50,
                         child: FloatingActionButton(
                           onPressed: _listen,
                           child: Icon(
                             _isListening ? Icons.mic : Icons.mic_none,
-                            size: 24, // Icon size
+                            size: 24,
                           ),
                           backgroundColor: Color(0xFF006769),
                         ),
                       ),
-                      SizedBox(width: 25), // Spacing between mic button and text
+                      SizedBox(width: 25),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             _text,
                             style: TextStyle(
-                              fontSize: 18.0, // Text size
+                              fontSize: 18.0,
                               color: Colors.black,
                               fontWeight: FontWeight.w400,
                               fontFamily: 'Amiri',
                             ),
                             textAlign: TextAlign.right,
                           ),
-                          SizedBox(height: 5), // Spacing between text and recitation status
+                          SizedBox(height: 5),
                           Text(
                             _recitationStatus,
                             style: TextStyle(
-                              fontSize: 14.0, // Text size
+                              fontSize: 14.0,
                               color: _recitationStatus.contains('Correct') ? Colors.green : Colors.red,
                               fontWeight: FontWeight.bold,
                             ),
