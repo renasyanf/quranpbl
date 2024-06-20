@@ -83,65 +83,24 @@ class SuratPage extends StatefulWidget {
 }
 
 class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixin {
-  ScrollController _scrollController = ScrollController();
-  stt.SpeechToText _speech = stt.SpeechToText();
+  final ScrollController _scrollController = ScrollController();
+  final stt.SpeechToText _speech = stt.SpeechToText();
   bool _isListening = false;
   String _text = '';
   double _confidence = 1.0;
-  
+
   String _recitationStatus = '';
-  AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _audioPlayer = AudioPlayer();
   String? _playingAyat;
 
   @override
   bool get wantKeepAlive => true;
 
   @override
-  void initState() {
-    super.initState();
-    _speech = stt.SpeechToText();
-  }
-
-  @override
   void dispose() {
     _scrollController.dispose();
     _audioPlayer.dispose();
     super.dispose();
-  }
-
-  void _listen() async {
-    if (!_isListening) {
-      bool available = await _speech.initialize(
-        onStatus: (val) => print('onStatus: $val'),
-        onError: (val) => print('onError: $val'),
-      );
-      if (available) {
-        setState(() {
-          _isListening = true;
-          _recitationStatus = '';
-        });
-        _speech.listen(
-          onResult: (val) async {
-            setState(() {
-              _text = val.recognizedWords;
-              if (val.hasConfidenceRating && val.confidence > 0) {
-                _confidence = val.confidence;
-              }
-            });
-            String correctedText = await correctText(_text);
-            setState(() {
-              _recitationStatus = _text == correctedText ? 'Correct Reading' : 'Incorrect Reading';
-            });
-          },
-          localeId: 'ar',
-        );
-      }
-    } else {
-      setState(() {
-        _isListening = false;
-        _speech.stop();
-      });
-    }
   }
 
   Future<String> correctText(String text) async {
@@ -175,6 +134,61 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
     }
   }
 
+  void _listen() async {
+    if (!_isListening) {
+      bool available = await _speech.initialize(
+        onStatus: (val) => print('onStatus: $val'),
+        onError: (val) => print('onError: $val'),
+      );
+      if (available) {
+        setState(() {
+          _isListening = true;
+          _recitationStatus = '';
+          _text = 'Listening...';
+        });
+
+        // Hentikan audio yang sedang diputar jika ada
+        if (_audioPlayer.state == PlayerState.playing || _audioPlayer.state == PlayerState.paused) {
+          await _audioPlayer.stop();
+          setState(() {
+            _playingAyat = null;
+          });
+        }
+
+        _speech.listen(
+          onResult: (val) async {
+            setState(() {
+              _text = val.recognizedWords;
+              if (val.hasConfidenceRating && val.confidence > 0) {
+                _confidence = val.confidence;
+              }
+            });
+            String correctedText = await correctText(_text);
+            setState(() {
+              _recitationStatus = _text == correctedText ? 'Correct Reading' : 'Incorrect Reading';
+            });
+          },
+          localeId: 'ar',
+        );
+      }
+    } else {
+      setState(() {
+        _isListening = false;
+        _recitationStatus = '';
+        _text = '';
+        _speech.stop();
+      });
+
+      // Hentikan audio yang sedang diputar jika speech recognition dihentikan
+      if (_audioPlayer.state == PlayerState.playing || _audioPlayer.state == PlayerState.paused) {
+        await _audioPlayer.stop();
+        setState(() {
+          _playingAyat = null;
+        });
+      }
+    }
+  }
+
   void _playAudio(String ayah, String audioUrl) async {
     if (_playingAyat == ayah) {
       await _audioPlayer.pause();
@@ -182,7 +196,12 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
         _playingAyat = null;
       });
     } else {
-      await _audioPlayer.play(DeviceFileSource(audioUrl));
+      // Ensure audio is stopped before playing new audio
+      if (_audioPlayer.state == PlayerState.playing) {
+        await _audioPlayer.stop();
+      }
+
+      await _audioPlayer.play(DeviceFileSource(audioUrl)); // Adjust according to your audio source
       setState(() {
         _playingAyat = ayah;
       });
@@ -223,138 +242,144 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
             return Center(child: Text('No data found'));
           } else {
             final ayatList = snapshot.data!;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        widget.surat.name,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color.fromARGB(255, 134, 109, 91)),
-                      ),
-                      SizedBox(height: 4),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '${widget.surat.numberOfVerses} - ${widget.surat.revelation}',
-                            style: TextStyle(fontSize: 14, color: Color(0xFFC7B7A3)),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 12),
-                Expanded(
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    itemCount: ayatList.length,
-                    itemBuilder: (context, index) {
-                      final ayat = ayatList[index];
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 255, 245, 237), // Unified background color
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Color(0xFF006769), width: 1),
+            return InteractiveViewer(
+              panEnabled: true,
+              boundaryMargin: EdgeInsets.all(20.0),
+              minScale: 0.5,
+              maxScale: 4.0,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          widget.surat.name,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color.fromARGB(255, 134, 109, 91)),
                         ),
-                        margin: EdgeInsets.symmetric(vertical: 4),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          title: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  OctagonNumber(
-                                    number: convertToPentagonArabicNumber(ayat.ayah),
-                                    size: 24.0,
-                                    color: Color(0xFF006769),
-                                  ),
-                                  IconButton(
-                                    icon: Icon(
-                                      _playingAyat == ayat.ayah ? Icons.pause : Icons.volume_up,
+                        SizedBox(height: 4),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '${widget.surat.numberOfVerses} - ${widget.surat.revelation}',
+                              style: TextStyle(fontSize: 14, color: Color(0xFFC7B7A3)),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Expanded(
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      itemCount: ayatList.length,
+                      itemBuilder: (context, index) {
+                        final ayat = ayatList[index];
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 255, 245, 237), // Unified background color
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Color(0xFF006769), width: 1),
+                          ),
+                          margin: EdgeInsets.symmetric(vertical: 4),
+                          child: ListTile(
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    OctagonNumber(
+                                      number: convertToPentagonArabicNumber(ayat.ayah),
+                                      size: 24.0,
                                       color: Color(0xFF006769),
                                     ),
-                                    onPressed: () {
-                                      _playAudio(ayat.ayah, ayat.audio); 
-                                    },
-                                  ),
-                                  SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      ayat.arab,
-                                      textAlign: TextAlign.right,
-                                      style: TextStyle(fontFamily: 'amiri', fontSize: 20),
+                                    IconButton(
+                                      icon: Icon(
+                                        _playingAyat == ayat.ayah ? Icons.pause : Icons.volume_up,
+                                        color: Color(0xFF006769),
+                                      ),
+                                      onPressed: () {
+                                        _playAudio(ayat.ayah, ayat.audio);
+                                      },
                                     ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                '${ayat.text}',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(fontFamily: 'amiri', fontSize: 15),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(height: 15),
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: FloatingActionButton(
-                          onPressed: _listen,
-                          child: Icon(
-                            _isListening ? Icons.mic : Icons.mic_none,
-                            size: 24,
-                          ),
-                          backgroundColor: Color(0xFF006769),
-                        ),
-                      ),
-                      SizedBox(width: 25),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _text,
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w400,
-                              fontFamily: 'Amiri',
-                            ),
-                            textAlign: TextAlign.right,
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            _recitationStatus,
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: _recitationStatus.contains('Correct') ? Colors.green : Colors.red,
-                              fontWeight: FontWeight.bold,
+                                    SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        ayat.arab,
+                                        textAlign: TextAlign.right,
+                                        style: TextStyle(fontFamily: 'amiri', fontSize: 20),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  '${ayat.text}',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(fontFamily: 'amiri', fontSize: 15),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 20),
-                        ],
-                      ),
-                    ],
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
+                  SizedBox(height: 8),
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: FloatingActionButton(
+                            onPressed: _listen,
+                            child: Icon(
+                              _isListening ? Icons.mic : Icons.mic_none,
+                              size: 24,
+                            ),
+                            backgroundColor: Color(0xFF006769),
+                          ),
+                        ),
+                        SizedBox(width: 25),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _text,
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: 'Amiri',
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              _recitationStatus,
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                color: _recitationStatus.contains('Correct') ? Colors.green : Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             );
           }
         },
