@@ -84,7 +84,7 @@ class SuratPage extends StatefulWidget {
 
 class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixin {
   final ScrollController _scrollController = ScrollController();
-  final stt.SpeechToText _speech = stt.SpeechToText();
+  stt.SpeechToText? _speech; // SpeechToText instance
   bool _isListening = false;
   String _text = '';
   double _confidence = 1.0;
@@ -97,9 +97,16 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
   bool get wantKeepAlive => true;
 
   @override
+  void initState() {
+    super.initState();
+    _speech = stt.SpeechToText();
+  }
+
+  @override
   void dispose() {
     _scrollController.dispose();
     _audioPlayer.dispose();
+    _speech?.cancel(); // Cancel SpeechToText instance on dispose
     super.dispose();
   }
 
@@ -134,9 +141,9 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
     }
   }
 
-  void _listen() async {
+  void _listen(String ayah) async {
     if (!_isListening) {
-      bool available = await _speech.initialize(
+      bool available = await _speech!.initialize(
         onStatus: (val) => print('onStatus: $val'),
         onError: (val) => print('onError: $val'),
       );
@@ -155,7 +162,7 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
           });
         }
 
-        _speech.listen(
+        _speech!.listen(
           onResult: (val) async {
             setState(() {
               _text = val.recognizedWords;
@@ -169,6 +176,10 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
             });
           },
           localeId: 'ar',
+          cancelOnError: true,
+          partialResults: false,
+          listenFor: Duration(seconds: 5),
+          pauseFor: Duration(seconds: 5),
         );
       }
     } else {
@@ -176,7 +187,7 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
         _isListening = false;
         _recitationStatus = '';
         _text = '';
-        _speech.stop();
+        _speech!.stop();
       });
 
       // Hentikan audio yang sedang diputar jika speech recognition dihentikan
@@ -309,6 +320,15 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
                                         _playAudio(ayat.ayah, ayat.audio);
                                       },
                                     ),
+                                    IconButton(
+                                      icon: Icon(
+                                        _isListening ? Icons.mic : Icons.mic_none,
+                                        color: Color(0xFF006769),
+                                      ),
+                                      onPressed: () {
+                                        _listen(ayat.ayah);
+                                      },
+                                    ),
                                     SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
@@ -341,7 +361,9 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
                           width: 50,
                           height: 50,
                           child: FloatingActionButton(
-                            onPressed: _listen,
+                            onPressed: () {
+                              _listen('');
+                            },
                             child: Icon(
                               _isListening ? Icons.mic : Icons.mic_none,
                               size: 24,
