@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:quranpbl/component/header.dart';
@@ -84,29 +85,24 @@ class SuratPage extends StatefulWidget {
 
 class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixin {
   final ScrollController _scrollController = ScrollController();
-  stt.SpeechToText? _speech; // SpeechToText instance
+  stt.SpeechToText _speech = stt.SpeechToText();
   bool _isListening = false;
   String _text = '';
   double _confidence = 1.0;
 
   String _recitationStatus = '';
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  AudioPlayer _audioPlayer = AudioPlayer();
   String? _playingAyat;
+  String? _listeningAyat; // ID ayat yang sedang didengarkan
 
   @override
   bool get wantKeepAlive => true;
 
   @override
-  void initState() {
-    super.initState();
-    _speech = stt.SpeechToText();
-  }
-
-  @override
   void dispose() {
     _scrollController.dispose();
     _audioPlayer.dispose();
-    _speech?.cancel(); // Cancel SpeechToText instance on dispose
+    _speech.stop(); // Stop SpeechToText instance on dispose
     super.dispose();
   }
 
@@ -143,18 +139,19 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
 
   void _listen(String ayah) async {
     if (!_isListening) {
-      bool available = await _speech!.initialize(
+      bool available = await _speech.initialize(
         onStatus: (val) => print('onStatus: $val'),
         onError: (val) => print('onError: $val'),
       );
       if (available) {
         setState(() {
           _isListening = true;
+          _listeningAyat = ayah;
           _recitationStatus = '';
           _text = 'Listening...';
         });
 
-        // Hentikan audio yang sedang diputar jika ada
+        // Stop any playing audio if exists
         if (_audioPlayer.state == PlayerState.playing || _audioPlayer.state == PlayerState.paused) {
           await _audioPlayer.stop();
           setState(() {
@@ -162,7 +159,7 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
           });
         }
 
-        _speech!.listen(
+        _speech.listen(
           onResult: (val) async {
             setState(() {
               _text = val.recognizedWords;
@@ -185,12 +182,13 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
     } else {
       setState(() {
         _isListening = false;
+        _listeningAyat = null;
         _recitationStatus = '';
         _text = '';
-        _speech!.stop();
+        _speech.stop();
       });
 
-      // Hentikan audio yang sedang diputar jika speech recognition dihentikan
+      // Stop playing audio if speech recognition is stopped
       if (_audioPlayer.state == PlayerState.playing || _audioPlayer.state == PlayerState.paused) {
         await _audioPlayer.stop();
         setState(() {
@@ -225,8 +223,20 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
     }
   }
 
+
   String convertToPentagonArabicNumber(String number) {
-    List<String> pentagonArabicNumbers = ['\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669'];
+    List<String> pentagonArabicNumbers = [
+      '\u0660',
+      '\u0661',
+      '\u0662',
+      '\u0663',
+      '\u0664',
+      '\u0665',
+      '\u0666',
+      '\u0667',
+      '\u0668',
+      '\u0669'
+    ];
     String pentagonArabicNumber = '';
     List<int> digits = number.codeUnits.map((e) => e - 48).toList();
     for (int digit in digits) {
@@ -269,7 +279,11 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
                         Text(
                           widget.surat.name,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color.fromARGB(255, 134, 109, 91)),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Color.fromARGB(255, 134, 109, 91),
+                          ),
                         ),
                         SizedBox(height: 4),
                         Row(
@@ -299,12 +313,13 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
                             border: Border.all(color: Color(0xFF006769), width: 1),
                           ),
                           margin: EdgeInsets.symmetric(vertical: 4),
-                          child: ListTile(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ListTile(
+                                contentPadding:
+                                    EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                title: Row(
                                   children: [
                                     OctagonNumber(
                                       number: convertToPentagonArabicNumber(ayat.ayah),
@@ -313,20 +328,13 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
                                     ),
                                     IconButton(
                                       icon: Icon(
-                                        _playingAyat == ayat.ayah ? Icons.pause : Icons.volume_up,
+                                        _playingAyat == ayat.ayah
+                                            ? Icons.pause
+                                            : Icons.volume_up,
                                         color: Color(0xFF006769),
                                       ),
                                       onPressed: () {
                                         _playAudio(ayat.ayah, ayat.audio);
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: Icon(
-                                        _isListening ? Icons.mic : Icons.mic_none,
-                                        color: Color(0xFF006769),
-                                      ),
-                                      onPressed: () {
-                                        _listen(ayat.ayah);
                                       },
                                     ),
                                     SizedBox(width: 8),
@@ -339,65 +347,58 @@ class _SuratPageState extends State<SuratPage> with AutomaticKeepAliveClientMixi
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 4),
-                                Text(
-                                  '${ayat.text}',
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(fontFamily: 'amiri', fontSize: 15),
+                              ),
+                              SizedBox(height: 2),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Text(
+                                  ayat.text,
+                                  style: TextStyle(fontFamily: 'amiri', fontSize: 18, color: Color(0xFF000000)),
                                 ),
-                              ],
-                            ),
+                              ),
+                              SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: Icon(
+                                      _listeningAyat == ayat.ayah ? Icons.mic : Icons.mic_none,
+                                      color: Colors.black,
+                                      size: 24,
+                                    ),
+                                    onPressed: () {
+                                      _listen(ayat.ayah);
+                                    },
+                                  ),
+                                  SizedBox(width: 8),
+                                   if (_listeningAyat == ayat.ayah)
+                                  Expanded(
+                                    child: Text(                                     
+                                      _text,
+                                      style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 0, 0, 0)),
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                   if (_listeningAyat == ayat.ayah)
+                                  Expanded(
+                                    child: Text(
+                                      
+                                      _recitationStatus,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: _recitationStatus == 'Correct Reading'
+                                            ? Colors.green
+                                            : Colors.red,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 4),
+                            ],
                           ),
                         );
                       },
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 50,
-                          height: 50,
-                          child: FloatingActionButton(
-                            onPressed: () {
-                              _listen('');
-                            },
-                            child: Icon(
-                              _isListening ? Icons.mic : Icons.mic_none,
-                              size: 24,
-                            ),
-                            backgroundColor: Color(0xFF006769),
-                          ),
-                        ),
-                        SizedBox(width: 25),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _text,
-                              style: TextStyle(
-                                fontSize: 18.0,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w400,
-                                fontFamily: 'Amiri',
-                              ),
-                              textAlign: TextAlign.right,
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              _recitationStatus,
-                              style: TextStyle(
-                                fontSize: 14.0,
-                                color: _recitationStatus.contains('Correct') ? Colors.green : Colors.red,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                          ],
-                        ),
-                      ],
                     ),
                   ),
                 ],
