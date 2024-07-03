@@ -9,7 +9,7 @@ import 'package:quranpbl/content/renungan.dart';
 import 'package:quranpbl/content/tajwidmenu.dart';
 import 'package:quranpbl/content/zakat.dart';
 import 'package:quranpbl/content/listnabi.dart';
-import 'package:quranpbl/content/onboard.dart';
+import 'package:quranpbl/content/about.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -207,7 +207,13 @@ class HomeScreen extends StatelessWidget {
                         );
                     }),
                     SizedBox(height: 25),
-                    HomeButton(imagePath: 'assets/icon/about.png', label: 'ABOUT', onTap: (){})
+                    HomeButton(imagePath: 'assets/icon/about.png', label: 'ABOUT', onTap: (){
+                       Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AboutPage()),
+                        );
+                    })
                   ],
                 ),
                 
